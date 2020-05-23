@@ -6,44 +6,45 @@
 
 //Warning! In this version Weather index is not yet implemented
 
-
 //post processing mode. Change value (could be 1, 2, 3, 4). Every mode have own internal parameters, look below
 #ifndef POSTPROCESS
- #define POSTPROCESS	2
+#define POSTPROCESS	0
 #endif
+
+
 
 //+++++++++++++++++++++++++++++
 //internal parameters, modify or add new
 //+++++++++++++++++++++++++++++
 //modify these values to tweak various color processing
 //POSTPROCESS 1
-float	EAdaptationMinV1=0.01;
-float	EAdaptationMaxV1=0.07;
-float	EContrastV1=0.95;
-float	EColorSaturationV1=1.0;
-float	EToneMappingCurveV1=6.0;
+float	EAdaptationMinV1 = 0.01;
+float	EAdaptationMaxV1 = 0.07;
+float	EContrastV1 = 0.95;
+float	EColorSaturationV1 = 1.0;
+float	EToneMappingCurveV1 = 6.0;
 
 //POSTPROCESS 2
 //float	EBrightnessV2=2.5;
-float	EAdaptationMinV2=0.05;
-float	EAdaptationMaxV2=0.05;//0.125;
-float	EToneMappingCurveV2=8.0;
-float	EIntensityContrastV2=1.0;
-float	EColorSaturationV2=1.0;
-float	EToneMappingOversaturationV2=180.0;
+float	EAdaptationMinV2 = 0.05;
+float	EAdaptationMaxV2 = 0.05;//0.125;
+float	EToneMappingCurveV2 = 8.0;
+float	EIntensityContrastV2 = 1.0;
+float	EColorSaturationV2 = 1.0;
+float	EToneMappingOversaturationV2 = 180.0;
 
 //POSTPROCESS 3
-float	EAdaptationMinV3=0.05;
-float	EAdaptationMaxV3=0.125;
-float	EToneMappingCurveV3=4.0;
-float	EToneMappingOversaturationV3=60.0;
+float	EAdaptationMinV3 = 0.05;
+float	EAdaptationMaxV3 = 0.125;
+float	EToneMappingCurveV3 = 4.0;
+float	EToneMappingOversaturationV3 = 60.0;
 
 //POSTPROCESS 4
-float	EAdaptationMinV4=0.2;
-float	EAdaptationMaxV4=0.125;
-float	EBrightnessCurveV4=0.7;
-float	EBrightnessMultiplierV4=0.45;
-float	EBrightnessToneMappingCurveV4=0.5;
+float	EAdaptationMinV4 = 0.2;
+float	EAdaptationMaxV4 = 0.125;
+float	EBrightnessCurveV4 = 0.7;
+float	EBrightnessMultiplierV4 = 0.45;
+float	EBrightnessToneMappingCurveV4 = 0.5;
 /*
 //example parameters with annotations for in-game editor
 float	ExampleScalar
@@ -92,111 +93,109 @@ SamplerState ExampleSampler
 //parameters for ldr color correction
 float	ECCGamma
 <
-	string UIName="CC: Gamma";
-	string UIWidget="Spinner";
-	float UIMin=0.2;//not zero!!!
-	float UIMax=5.0;
-> = {1.0};
+	string UIName = "CC: Gamma";
+	string UIWidget = "Spinner";
+	float UIMin = 0.2;//not zero!!!
+	float UIMax = 5.0;
+> = { 1.0 };
 
 float	ECCInBlack
 <
-	string UIName="CC: In black";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {0.0};
+	string UIName = "CC: In black";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 1.0;
+> = { 0.0 };
 
 float	ECCInWhite
 <
-	string UIName="CC: In white";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {1.0};
+	string UIName = "CC: In white";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 1.0;
+> = { 1.0 };
 
 float	ECCOutBlack
 <
-	string UIName="CC: Out black";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {0.0};
+	string UIName = "CC: Out black";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 1.0;
+> = { 0.0 };
 
 float	ECCOutWhite
 <
-	string UIName="CC: Out white";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {1.0};
+	string UIName = "CC: Out white";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 1.0;
+> = { 1.0 };
 
 float	ECCBrightness
 <
-	string UIName="CC: Brightness";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=10.0;
-> = {1.0};
+	string UIName = "CC: Brightness";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 10.0;
+> = { 1.0 };
 
 float	ECCContrastGrayLevel
 <
-	string UIName="CC: Contrast gray level";
-	string UIWidget="Spinner";
-	float UIMin=0.01;
-	float UIMax=0.99;
-> = {0.5};
+	string UIName = "CC: Contrast gray level";
+	string UIWidget = "Spinner";
+	float UIMin = 0.01;
+	float UIMax = 0.99;
+> = { 0.5 };
 
 float	ECCContrast
 <
-	string UIName="CC: Contrast";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=10.0;
-> = {1.0};
+	string UIName = "CC: Contrast";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 10.0;
+> = { 1.0 };
 
 float	ECCSaturation
 <
-	string UIName="CC: Saturation";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=10.0;
-> = {1.0};
+	string UIName = "CC: Saturation";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 10.0;
+> = { 1.0 };
 
 float	ECCDesaturateShadows
 <
-	string UIName="CC: Desaturate shadows";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {0.0};
+	string UIName = "CC: Desaturate shadows";
+	string UIWidget = "Spinner";
+	float UIMin = 0.0;
+	float UIMax = 1.0;
+> = { 0.0 };
 
 float3	ECCColorBalanceShadows <
-	string UIName="CC: Color balance shadows";
-	string UIWidget="Color";
-> = {0.5, 0.5, 0.5};
+	string UIName = "CC: Color balance shadows";
+	string UIWidget = "Color";
+> = { 0.5, 0.5, 0.5 };
 
 float3	ECCColorBalanceHighlights <
-	string UIName="CC: Color balance highlights";
-	string UIWidget="Color";
-> = {0.5, 0.5, 0.5};
+	string UIName = "CC: Color balance highlights";
+	string UIWidget = "Color";
+> = { 0.5, 0.5, 0.5 };
 
 float3	ECCChannelMixerR <
-	string UIName="CC: Channel mixer R";
-	string UIWidget="Color";
-> = {1.0, 0.0, 0.0};
+	string UIName = "CC: Channel mixer R";
+	string UIWidget = "Color";
+> = { 1.0, 0.0, 0.0 };
 
 float3	ECCChannelMixerG <
-	string UIName="CC: Channel mixer G";
-	string UIWidget="Color";
-> = {0.0, 1.0, 0.0};
+	string UIName = "CC: Channel mixer G";
+	string UIWidget = "Color";
+> = { 0.0, 1.0, 0.0 };
 
 float3	ECCChannelMixerB <
-	string UIName="CC: Channel mixer B";
-	string UIWidget="Color";
-> = {0.0, 0.0, 1.0};
+	string UIName = "CC: Channel mixer B";
+	string UIWidget = "Color";
+> = { 0.0, 0.0, 1.0 };
 #endif //E_CC_PROCEDURAL
-
-
 
 //+++++++++++++++++++++++++++++
 //external enb parameters, do not modify
@@ -218,6 +217,8 @@ float	ENightDayFactor;
 //changes 0 or 1. 0 means that exterior, 1 - interior
 float	EInteriorFactor;
 float	FieldOfView;
+
+#include "enbeffectsuperl3.fx"
 
 //+++++++++++++++++++++++++++++
 //external enb debugging parameters for shader programmers, do not modify
@@ -297,13 +298,12 @@ VS_OUTPUT_POST	VS_Draw(VS_INPUT_POST IN)
 {
 	VS_OUTPUT_POST	OUT;
 	float4	pos;
-	pos.xyz=IN.pos.xyz;
-	pos.w=1.0;
-	OUT.pos=pos;
-	OUT.txcoord0.xy=IN.txcoord.xy;
+	pos.xyz = IN.pos.xyz;
+	pos.w = 1.0;
+	OUT.pos = pos;
+	OUT.txcoord0.xy = IN.txcoord.xy;
 	return OUT;
 }
-
 
 
 float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
@@ -311,35 +311,44 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float4	res;
 	float4	color;
 
-	color=TextureColor.Sample(Sampler0, IN.txcoord0.xy); //hdr scene color
+	color = TextureColor.Sample(Sampler0, IN.txcoord0.xy); //hdr scene color
 
 	float3	lens;
-	lens.xyz=TextureLens.Sample(Sampler1, IN.txcoord0.xy).xyz;
-	color.xyz+=lens.xyz * ENBParams01.y; //lens amount
+	lens.xyz = TextureLens.Sample(Sampler1, IN.txcoord0.xy).xyz;
+	color.xyz += lens.xyz * ENBParams01.y; //lens amount
 
-	float3	bloom=TextureBloom.Sample(Sampler1, IN.txcoord0.xy);
+	float3	bloom = TextureBloom.Sample(Sampler1, IN.txcoord0.xy);
 
-	bloom.xyz=bloom-color;
-	bloom.xyz=max(bloom, 0.0);
-	color.xyz+=bloom*ENBParams01.x; //bloom amount
+	bloom.xyz = bloom - color;
+	bloom.xyz = max(bloom, 0.0);
+	color.xyz += bloom * ENBParams01.x; //bloom amount
 
-	float	grayadaptation=TextureAdaptation.Sample(Sampler0, IN.txcoord0.xy).x;
+	float	grayadaptation = TextureAdaptation.Sample(Sampler0, IN.txcoord0.xy).x;
+	grayadaptation = max(grayadaptation, 0.0);
+	grayadaptation = min(grayadaptation, 50.0);
+	float AdaptationMax = ExtIntDayNight(ExtDayAdaptationMax, ExtNightAdaptationMax, IntDayAdaptationMax, IntNightAdaptationMax);
+	float AdaptationMin = ExtIntDayNight(ExtDayAdaptationMin, ExtNightAdaptationMin, IntDayAdaptationMin, IntNightAdaptationMin);
+	color.xyz = color.xyz / (grayadaptation*AdaptationMax + AdaptationMin);
+#if (POSTPROCESS==0)
+	color.xyz = Tonemap_Uchimura(color.xyz);
+#endif
+
 
 #if (POSTPROCESS==1)
 
-	grayadaptation=max(grayadaptation, 0.0);
-	grayadaptation=min(grayadaptation, 50.0);
-	color.xyz=color.xyz/(grayadaptation*EAdaptationMaxV1+EAdaptationMinV1);
+	grayadaptation = max(grayadaptation, 0.0);
+	grayadaptation = min(grayadaptation, 50.0);
+	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV1 + EAdaptationMinV1);
 
-	float cgray=dot(color.xyz, float3(0.27, 0.67, 0.06));
-	cgray=pow(cgray, EContrastV1);
-	float3 poweredcolor=pow(color.xyz, EColorSaturationV1);
-	float newgray=dot(poweredcolor.xyz, float3(0.27, 0.67, 0.06));
-	color.xyz=poweredcolor.xyz*cgray/(newgray+0.0001);
+	float cgray = dot(color.xyz, float3(0.27, 0.67, 0.06));
+	cgray = pow(cgray, EContrastV1);
+	float3 poweredcolor = pow(color.xyz, EColorSaturationV1);
+	float newgray = dot(poweredcolor.xyz, float3(0.27, 0.67, 0.06));
+	color.xyz = poweredcolor.xyz*cgray / (newgray + 0.0001);
 
-	float3	luma=color.xyz;
-	float	lumamax=300.0;
-	color.xyz=(color.xyz * (1.0 + color.xyz/lumamax))/(color.xyz + EToneMappingCurveV1);
+	float3	luma = color.xyz;
+	float	lumamax = 300.0;
+	color.xyz = (color.xyz * (1.0 + color.xyz / lumamax)) / (color.xyz + EToneMappingCurveV1);
 
 #endif
 
@@ -347,124 +356,124 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 
 #if (POSTPROCESS==2)
 
-	grayadaptation=max(grayadaptation, 0.0);
-	grayadaptation=min(grayadaptation, 50.0);
-	color.xyz=color.xyz/(grayadaptation*EAdaptationMaxV2+EAdaptationMinV2);
+	grayadaptation = max(grayadaptation, 0.0);
+	grayadaptation = min(grayadaptation, 50.0);
+	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV2 + EAdaptationMinV2);
 
 	//color.xyz*=EBrightnessV2;
-	color.xyz+=0.000001;
-	float3 xncol=normalize(color.xyz);
-	float3 scl=color.xyz/xncol.xyz;
-	scl=pow(scl, EIntensityContrastV2);
-	xncol.xyz=pow(xncol.xyz, EColorSaturationV2);
-	color.xyz=scl*xncol.xyz;
+	color.xyz += 0.000001;
+	float3 xncol = normalize(color.xyz);
+	float3 scl = color.xyz / xncol.xyz;
+	scl = pow(scl, EIntensityContrastV2);
+	xncol.xyz = pow(xncol.xyz, EColorSaturationV2);
+	color.xyz = scl * xncol.xyz;
 
-	float	lumamax=EToneMappingOversaturationV2;
-	color.xyz=(color.xyz * (1.0 + color.xyz/lumamax))/(color.xyz + EToneMappingCurveV2);
+	float	lumamax = EToneMappingOversaturationV2;
+	color.xyz = (color.xyz * (1.0 + color.xyz / lumamax)) / (color.xyz + EToneMappingCurveV2);
 
 #endif
 
 
 #if (POSTPROCESS==3)
 
-	grayadaptation=max(grayadaptation, 0.0);
-	grayadaptation=min(grayadaptation, 50.0);
-	color.xyz=color.xyz/(grayadaptation*EAdaptationMaxV3+EAdaptationMinV3);
+	grayadaptation = max(grayadaptation, 0.0);
+	grayadaptation = min(grayadaptation, 50.0);
+	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV3 + EAdaptationMinV3);
 
-	float	lumamax=EToneMappingOversaturationV3;
-	color.xyz=(color.xyz * (1.0 + color.xyz/lumamax))/(color.xyz + EToneMappingCurveV3);
+	float	lumamax = EToneMappingOversaturationV3;
+	color.xyz = (color.xyz * (1.0 + color.xyz / lumamax)) / (color.xyz + EToneMappingCurveV3);
 
 #endif
 
 
 #if (POSTPROCESS==4)
 
-	grayadaptation=max(grayadaptation, 0.0);
-	grayadaptation=min(grayadaptation, 50.0);
-	color.xyz=color.xyz/(grayadaptation*EAdaptationMaxV4+EAdaptationMinV4);
+	grayadaptation = max(grayadaptation, 0.0);
+	grayadaptation = min(grayadaptation, 50.0);
+	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV4 + EAdaptationMinV4);
 
 	float Y = dot(color.xyz, float3(0.299, 0.587, 0.114)); //0.299 * R + 0.587 * G + 0.114 * B;
 	float U = dot(color.xyz, float3(-0.14713, -0.28886, 0.436)); //-0.14713 * R - 0.28886 * G + 0.436 * B;
 	float V = dot(color.xyz, float3(0.615, -0.51499, -0.10001)); //0.615 * R - 0.51499 * G - 0.10001 * B;
-	Y=pow(Y, EBrightnessCurveV4);
-	Y=Y*EBrightnessMultiplierV4;
-//	Y=Y/(Y+EBrightnessToneMappingCurveV4);
-//	float	desaturatefact=saturate(Y*Y*Y*1.7);
-//	U=lerp(U, 0.0, desaturatefact);
-//	V=lerp(V, 0.0, desaturatefact);
-	color.xyz=V * float3(1.13983, -0.58060, 0.0) + U * float3(0.0, -0.39465, 2.03211) + Y;
+	Y = pow(Y, EBrightnessCurveV4);
+	Y = Y * EBrightnessMultiplierV4;
+	//	Y=Y/(Y+EBrightnessToneMappingCurveV4);
+	//	float	desaturatefact=saturate(Y*Y*Y*1.7);
+	//	U=lerp(U, 0.0, desaturatefact);
+	//	V=lerp(V, 0.0, desaturatefact);
+		color.xyz = V * float3(1.13983, -0.58060, 0.0) + U * float3(0.0, -0.39465, 2.03211) + Y;
 
-	color.xyz=max(color.xyz, 0.0);
-	color.xyz=color.xyz/(color.xyz+EBrightnessToneMappingCurveV4);
+		color.xyz = max(color.xyz, 0.0);
+		color.xyz = color.xyz / (color.xyz + EBrightnessToneMappingCurveV4);
 
-#endif
-
-
-#ifdef E_CC_PALETTE
-	//activated by UsePaletteTexture=true
-	color.rgb=saturate(color.rgb);
-	float3	brightness=grayadaptation;//adaptation luminance
-	brightness=max(brightness.x, max(brightness.y, brightness.z));
-	brightness.x=(brightness.x/(brightness.x+1.0));
-	float3	palette;
-	float2	uvpalette;
-	uvpalette.y=brightness.x;
-	uvpalette.x=color.r;
-	palette.r=TexturePalette.SampleLevel(Sampler1, uvpalette, 0.0).r;
-	uvpalette.x=color.g;
-	palette.g=TexturePalette.SampleLevel(Sampler1, uvpalette, 0.0).g;
-	uvpalette.x=color.b;
-	palette.b=TexturePalette.SampleLevel(Sampler1, uvpalette, 0.0).b;
-	color.rgb=palette.rgb;
-#endif //E_CC_PALETTE
+	#endif
 
 
-#ifdef E_CC_PROCEDURAL
-	//activated by UseProceduralCorrection=true
-	float	tempgray;
-	float4	tempvar;
-	float3	tempcolor;
+	#ifdef E_CC_PALETTE
+		//activated by UsePaletteTexture=true
+		color.rgb = saturate(color.rgb);
+		float3	brightness = grayadaptation;//adaptation luminance
+		brightness = max(brightness.x, max(brightness.y, brightness.z));
+		brightness.x = (brightness.x / (brightness.x + 1.0));
+		float3	palette;
+		float2	uvpalette;
+		uvpalette.y = brightness.x;
+		uvpalette.x = color.r;
+		palette.r = TexturePalette.SampleLevel(Sampler1, uvpalette, 0.0).r;
+		uvpalette.x = color.g;
+		palette.g = TexturePalette.SampleLevel(Sampler1, uvpalette, 0.0).g;
+		uvpalette.x = color.b;
+		palette.b = TexturePalette.SampleLevel(Sampler1, uvpalette, 0.0).b;
+		color.rgb = palette.rgb;
+	#endif //E_CC_PALETTE
 
-	//+++ levels like in photoshop, including gamma, lightness, additive brightness
-	color=max(color-ECCInBlack, 0.0) / max(ECCInWhite-ECCInBlack, 0.0001);
-	if (ECCGamma!=1.0) color=pow(color, ECCGamma);
-	color=color*(ECCOutWhite-ECCOutBlack) + ECCOutBlack;
 
-	//+++ brightness
-	color=color*ECCBrightness;
+	#ifdef E_CC_PROCEDURAL
+		//activated by UseProceduralCorrection=true
+		float	tempgray;
+		float4	tempvar;
+		float3	tempcolor;
 
-	//+++ contrast
-	color=(color-ECCContrastGrayLevel) * ECCContrast + ECCContrastGrayLevel;
+		//+++ levels like in photoshop, including gamma, lightness, additive brightness
+		color = max(color - ECCInBlack, 0.0) / max(ECCInWhite - ECCInBlack, 0.0001);
+		if (ECCGamma != 1.0) color = pow(color, ECCGamma);
+		color = color * (ECCOutWhite - ECCOutBlack) + ECCOutBlack;
 
-	//+++ saturation
-	tempgray=dot(color.xyz, 0.3333);
-	color=lerp(tempgray, color, ECCSaturation);
+		//+++ brightness
+		color = color * ECCBrightness;
 
-	//+++ desaturate shadows
-	tempgray=dot(color.xyz, 0.3333);
-	tempvar.x=saturate(1.0-tempgray);
-	tempvar.x*=tempvar.x;
-	tempvar.x*=tempvar.x;
-	color=lerp(color, tempgray, ECCDesaturateShadows*tempvar.x);
+		//+++ contrast
+		color = (color - ECCContrastGrayLevel) * ECCContrast + ECCContrastGrayLevel;
 
-	//+++ color balance
-	color=saturate(color);
-	tempgray=dot(color.xyz, 0.3333);
-	float2	shadow_highlight=float2(1.0-tempgray, tempgray);
-	shadow_highlight*=shadow_highlight;
-	color.rgb+=(ECCColorBalanceHighlights*2.0-1.0)*color * shadow_highlight.x;
-	color.rgb+=(ECCColorBalanceShadows*2.0-1.0)*(1.0-color) * shadow_highlight.y;
+		//+++ saturation
+		tempgray = dot(color.xyz, 0.3333);
+		color = lerp(tempgray, color, ECCSaturation);
 
-	//+++ channel mixer
-	tempcolor=color;
-	color.r=dot(tempcolor, ECCChannelMixerR);
-	color.g=dot(tempcolor, ECCChannelMixerG);
-	color.b=dot(tempcolor, ECCChannelMixerB);
-#endif //E_CC_PROCEDURAL
+		//+++ desaturate shadows
+		tempgray = dot(color.xyz, 0.3333);
+		tempvar.x = saturate(1.0 - tempgray);
+		tempvar.x *= tempvar.x;
+		tempvar.x *= tempvar.x;
+		color = lerp(color, tempgray, ECCDesaturateShadows*tempvar.x);
 
-	res.xyz=saturate(color);
-	res.w=1.0;
-	return res;
+		//+++ color balance
+		color = saturate(color);
+		tempgray = dot(color.xyz, 0.3333);
+		float2	shadow_highlight = float2(1.0 - tempgray, tempgray);
+		shadow_highlight *= shadow_highlight;
+		color.rgb += (ECCColorBalanceHighlights*2.0 - 1.0)*color * shadow_highlight.x;
+		color.rgb += (ECCColorBalanceShadows*2.0 - 1.0)*(1.0 - color) * shadow_highlight.y;
+
+		//+++ channel mixer
+		tempcolor = color;
+		color.r = dot(tempcolor, ECCChannelMixerR);
+		color.g = dot(tempcolor, ECCChannelMixerG);
+		color.b = dot(tempcolor, ECCChannelMixerB);
+	#endif //E_CC_PROCEDURAL
+
+		res.xyz = saturate(color);
+		res.w = 1.0;
+		return res;
 }
 
 
@@ -477,57 +486,57 @@ float4	PS_DrawOriginal(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float4	res;
 	float4	color;
 
-	float2	scaleduv=Params01[6].xy*IN.txcoord0.xy;
-	scaleduv=max(scaleduv, 0.0);
-	scaleduv=min(scaleduv, Params01[6].zy);
+	float2	scaleduv = Params01[6].xy*IN.txcoord0.xy;
+	scaleduv = max(scaleduv, 0.0);
+	scaleduv = min(scaleduv, Params01[6].zy);
 
-	color=TextureColor.Sample(Sampler0, IN.txcoord0.xy); //hdr scene color
+	color = TextureColor.Sample(Sampler0, IN.txcoord0.xy); //hdr scene color
 
 	float4	r0, r1, r2, r3;
-	r1.xy=scaleduv;
+	r1.xy = scaleduv;
 	r0.xyz = color.xyz;
-	if (0.5<=Params01[0].x) r1.xy=IN.txcoord0.xy;
+	if (0.5 <= Params01[0].x) r1.xy = IN.txcoord0.xy;
 	r1.xyz = TextureBloom.Sample(Sampler1, r1.xy).xyz;
 	r2.xy = TextureAdaptation.Sample(Sampler1, IN.txcoord0.xy).xy; //in skyrimse it two component
 
-	r0.w=dot(float3(2.125000e-001, 7.154000e-001, 7.210000e-002), r0.xyz);
-	r0.w=max(r0.w, 1.000000e-005);
-	r1.w=r2.y/r2.x;
-	r2.y=r0.w * r1.w;
-	if (0.5<Params01[2].z) r2.z=0xffffffff; else r2.z=0;
-	r3.xy=r1.w * r0.w + float2(-4.000000e-003, 1.000000e+000);
-	r1.w=max(r3.x, 0.0);
-	r3.xz=r1.w * 6.2 + float2(5.000000e-001, 1.700000e+000);
-	r2.w=r1.w * r3.x;
-	r1.w=r1.w * r3.z + 6.000000e-002;
-	r1.w=r2.w / r1.w;
-	r1.w=pow(r1.w, 2.2);
-	r1.w=r1.w * Params01[2].y;
-	r2.w=r2.y * Params01[2].y + 1.0;
-	r2.y=r2.w * r2.y;
-	r2.y=r2.y / r3.y;
-	if (r2.z==0) r1.w=r2.y; else r1.w=r1.w;
-	r0.w=r1.w / r0.w;
-	r1.w=saturate(Params01[2].x - r1.w);
-	r1.xyz=r1 * r1.w;
-	r0.xyz=r0 * r0.w + r1;
-	r1.x=dot(r0.xyz, float3(2.125000e-001, 7.154000e-001, 7.210000e-002));
-	r0.w=1.0;
-	r0=r0 - r1.x;
-	r0=Params01[3].x * r0 + r1.x;
-	r1=Params01[4] * r1.x - r0;
-	r0=Params01[4].w * r1 + r0;
-	r0=Params01[3].w * r0 - r2.x;
-	r0=Params01[3].z * r0 + r2.x;
-	r0.xyz=saturate(r0);
-	r1.xyz=pow(r1.xyz, Params01[6].w);
+	r0.w = dot(float3(2.125000e-001, 7.154000e-001, 7.210000e-002), r0.xyz);
+	r0.w = max(r0.w, 1.000000e-005);
+	r1.w = r2.y / r2.x;
+	r2.y = r0.w * r1.w;
+	if (0.5 < Params01[2].z) r2.z = 0xffffffff; else r2.z = 0;
+	r3.xy = r1.w * r0.w + float2(-4.000000e-003, 1.000000e+000);
+	r1.w = max(r3.x, 0.0);
+	r3.xz = r1.w * 6.2 + float2(5.000000e-001, 1.700000e+000);
+	r2.w = r1.w * r3.x;
+	r1.w = r1.w * r3.z + 6.000000e-002;
+	r1.w = r2.w / r1.w;
+	r1.w = pow(r1.w, 2.2);
+	r1.w = r1.w * Params01[2].y;
+	r2.w = r2.y * Params01[2].y + 1.0;
+	r2.y = r2.w * r2.y;
+	r2.y = r2.y / r3.y;
+	if (r2.z == 0) r1.w = r2.y; else r1.w = r1.w;
+	r0.w = r1.w / r0.w;
+	r1.w = saturate(Params01[2].x - r1.w);
+	r1.xyz = r1 * r1.w;
+	r0.xyz = r0 * r0.w + r1;
+	r1.x = dot(r0.xyz, float3(2.125000e-001, 7.154000e-001, 7.210000e-002));
+	r0.w = 1.0;
+	r0 = r0 - r1.x;
+	r0 = Params01[3].x * r0 + r1.x;
+	r1 = Params01[4] * r1.x - r0;
+	r0 = Params01[4].w * r1 + r0;
+	r0 = Params01[3].w * r0 - r2.x;
+	r0 = Params01[3].z * r0 + r2.x;
+	r0.xyz = saturate(r0);
+	r1.xyz = pow(r1.xyz, Params01[6].w);
 	//active only in certain modes, like khajiit vision, otherwise Params01[5].w=0
-	r1=Params01[5] - r0;
-	res=Params01[5].w * r1 + r0;
+	r1 = Params01[5] - r0;
+	res = Params01[5].w * r1 + r0;
 
-//	res.xyz = color.xyz;
-//	res.w=1.0;
-	return res;
+	//	res.xyz = color.xyz;
+	//	res.w=1.0;
+		return res;
 }
 
 
@@ -535,7 +544,7 @@ float4	PS_DrawOriginal(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //techniques
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-technique11 Draw <string UIName="ENBSeries";>
+technique11 Draw < string UIName = "ENBSeries"; >
 {
 	pass p0
 	{
@@ -546,7 +555,7 @@ technique11 Draw <string UIName="ENBSeries";>
 
 
 
-technique11 ORIGINALPOSTPROCESS <string UIName="Vanilla";> //do not modify this technique
+technique11 ORIGINALPOSTPROCESS < string UIName = "Vanilla"; > //do not modify this technique
 {
 	pass p0
 	{
