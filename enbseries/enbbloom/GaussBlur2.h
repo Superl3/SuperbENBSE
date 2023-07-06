@@ -10,56 +10,6 @@
 
 // Options...
 // Bloom tinting by pass. Provides a cool violet shift effect. 
-#define GaussianBloomColorEffect 0
-
-float	fContrast
-<
-	string UIName="Contrast";
-	string UIWidget="spinner";
-	float UIMin=0.0;
-	float UIMax=1000.0;
-> = {1.0};
-
-float	ECCInBlack
-<
-	string UIName="CC: In black";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=5.0;
-> = {0.0};
-
-float	ECCInWhite
-<
-	string UIName="CC: In white";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=500.0;
-> = {1.0};
-
-float	ECCOutBlack
-<
-	string UIName="CC: Out black";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {0.0};
-
-float	ECCOutWhite
-<
-	string UIName="CC: Out white";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=1.0;
-> = {1.0};
-
-float4	fSaturation
-<
-	string UIName="CC: Saturation";
-	string UIWidget="Spinner";
-	float UIMin=0.0;
-	float UIMax=5.0;
-> = {1.0, 1.0, 1.0, 1.0};
-
 
 // SHADERS ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //
@@ -70,22 +20,22 @@ float3 ColorFetch(Texture2D inputtex, float2 coord)
 }
 
 //Horizontal gaussian blur leveraging hardware filtering for fewer texture lookups.
-float3  FuncHoriBlur(Texture2D inputtex, float2 uvsrc, float2 pxSize, float Iteration)
+float3  FuncHoriBlur(Texture2D inputtex, float2 uvsrc, float2 pxSize)
 {    
 float weights[5];
 float offsets[5];
     
-    weights[0] = 2.0;
-    weights[1] = 1.67;
-    weights[2] = 0.8;
-    weights[3] = 0.23;
-    weights[4] = 0.09;
+    weights[0] = 0.19638062;
+    weights[1] = 0.29675293;
+    weights[2] = 0.09442139;
+    weights[3] = 0.01037598;
+    weights[4] = 0.00025940;
     
-    offsets[0] = 0.0;
-    offsets[1] = 1.0;
-    offsets[2] = 2.0;
-    offsets[3] = 3.0;
-    offsets[4] = 4.0;
+    offsets[0] = 0.00000000;
+    offsets[1] = 1.41176471;
+    offsets[2] = 3.29411765;
+    offsets[3] = 5.17647059;
+    offsets[4] = 7.05882353;
     
     float2 uv = uvsrc; //fragCoord.xy / iResolution.xy;
     
@@ -100,8 +50,8 @@ float offsets[5];
         for(int i = 1; i < 5; i++)
         {
             float2 offset = offsets[i] * pxSize;
-            color += ColorFetch(inputtex, uv + offset * float2(0.6, 0.0)) * weights[i];
-            color += ColorFetch(inputtex, uv - offset * float2(0.6, 0.0)) * weights[i];
+            color += ColorFetch(inputtex, uv + offset * float2(0.5, 0.0)) * weights[i];
+            color += ColorFetch(inputtex, uv - offset * float2(0.5, 0.0)) * weights[i];
             weightSum += weights[i] * 2.0;
         }
 
@@ -112,22 +62,22 @@ float offsets[5];
 }
 
 //Vertical gaussian blur leveraging hardware filtering for fewer texture lookups.
-float3  FuncVertBlur(Texture2D inputtex, float2 uvsrc, float2 pxSize, float Iteration)
+float3  FuncVertBlur(Texture2D inputtex, float2 uvsrc, float2 pxSize)
 {    
 float weights[5];
 float offsets[5];
     
-    weights[0] = 2.0;
-    weights[1] = 1.67;
-    weights[2] = 0.8;
-    weights[3] = 0.23;
-    weights[4] = 0.09;
+    weights[0] = 0.19638062;
+    weights[1] = 0.29675293;
+    weights[2] = 0.09442139;
+    weights[3] = 0.01037598;
+    weights[4] = 0.00025940;
     
-    offsets[0] = 0.0;
-    offsets[1] = 1.0;
-    offsets[2] = 2.0;
-    offsets[3] = 3.0;
-    offsets[4] = 4.0;
+    offsets[0] = 0.00000000;
+    offsets[1] = 1.41176471;
+    offsets[2] = 3.29411765;
+    offsets[3] = 5.17647059;
+    offsets[4] = 7.05882353;
     
     float2 uv = uvsrc; //fragCoord.xy / iResolution.xy;
     
@@ -142,8 +92,8 @@ float offsets[5];
         for(int i = 1; i < 5; i++)
         {
             float2 offset = offsets[i] * pxSize;
-            color += ColorFetch(inputtex, uv + offset * float2(0.0, 0.6)) * weights[i];
-            color += ColorFetch(inputtex, uv - offset * float2(0.0, 0.6)) * weights[i];
+            color += ColorFetch(inputtex, uv + offset * float2(0.0, 0.5)) * weights[i];
+            color += ColorFetch(inputtex, uv - offset * float2(0.0, 0.5)) * weights[i];
             weightSum += weights[i] * 2.0;
         }
 
@@ -154,102 +104,108 @@ float offsets[5];
 }
 
 float4  PS_GaussHResize(VS_OUTPUT_POST IN, float4 v0 : SV_Position0,
-  uniform Texture2D inputtex, uniform float texsize, uniform float Iteration) : SV_Target
+  uniform Texture2D inputtex, uniform float texsize) : SV_Target
 {
   float4  res;
 
   float2 pxSize = (1/(texsize))*float2(1, ScreenSize.z);
-  res.xyz=FuncHoriBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration);
+  res.xyz=FuncHoriBlur(inputtex, IN.txcoord0.xy, pxSize*2);
 
-  #if 1 // Double blur. This removes artifacing in the raw bloom texture.
-  // However, it costs more than ENB's bloom and does like 60 passes. 
-  // The aliasing is only noticeable at 100% bloom anyway. 
-  res.xyz+=FuncHoriBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration+1);
-  res.xyz/=2;
-  #endif
-  
   res=max(res, 0.0);
   res=min(res, 16384.0);
 
-  res.w=1.0;
+  res.w=10.0;
   return res;
 }
 
 float4  PS_GaussVResize(VS_OUTPUT_POST IN, float4 v0 : SV_Position0,
-  uniform Texture2D inputtex, uniform float texsize, uniform float Iteration) : SV_Target
+  uniform Texture2D inputtex, uniform float texsize) : SV_Target
 {
   float4  res;
 
   float2 pxSize = (1/(texsize))*float2(1, ScreenSize.z);
-  res.xyz=FuncVertBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration);
+  res.xyz=FuncVertBlur(inputtex, IN.txcoord0.xy, pxSize*2);
 
-  #if 1 // Double blur. This removes artifacing in the raw bloom texture.
-  // However, it costs more than ENB's bloom and does like 60 passes. 
-  // The aliasing is only noticeable at 100% bloom anyway. 
-  res.xyz+=FuncVertBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration+1);
-  res.xyz/=2;
-  #endif
-  
   res=max(res, 0.0);
   res=min(res, 16384.0);
 
-  res.w=1.0;
+  res.w=10.0;
   return res;
 }
 
 float4  PS_GaussHResizeFirst(VS_OUTPUT_POST IN, float4 v0 : SV_Position0,
-  uniform Texture2D inputtex, uniform float texsize, uniform float Iteration) : SV_Target
+  uniform Texture2D inputtex, uniform float texsize) : SV_Target
 {
   float4  res;
 
   float2 pxSize = (1/(texsize))*float2(1, ScreenSize.z);
-  res.xyz=FuncHoriBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration);
-  
-  #if 1 // Double blur. This removes artifacing in the raw bloom texture.
-  // However, it costs more than ENB's bloom and does like 60 passes. 
-  // The aliasing is only noticeable at 100% bloom anyway. 
-  res.xyz+=FuncHoriBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration+1);
-  res.xyz/=2;
-  #endif
+  res.xyz=FuncHoriBlur(inputtex, IN.txcoord0.xy, pxSize*2);
 
-  	res.xyz=max(res.xyz-(ECCInBlack*0.1), 0.0) / max(ECCInWhite-(ECCInBlack*0.1), 0.00001);
+  float ECCInBlack = DayNightInt(ECCInBlackExteriorDay, ECCInBlackExteriorDay, ECCInBlackInterior);
+  float ECCInWhite = DayNightInt(ECCInWhiteExteriorDay, ECCInWhiteExteriorDay, ECCInWhiteInterior);
+  float fContrast = DayNightInt(fContrastExteriorDay, fContrastExteriorDay, fContrastInterior);
+  float ECCOutBlack = DayNightInt(ECCOutBlackExteriorDay, ECCOutBlackExteriorDay, ECCOutBlackInterior);
+  float ECCOutWhite = DayNightInt(ECCOutWhiteExteriorDay, ECCOutWhiteExteriorDay, ECCOutWhiteInterior);
+
+  	res.xyz=max(res.xyz-ECCInBlack, 0.0) / max(ECCInWhite-ECCInBlack, 0.0001);
 	if (fContrast!=1.0) res.xyz=pow(res.xyz, fContrast);
 	res.xyz=res.xyz*(ECCOutWhite-ECCOutBlack) + ECCOutBlack;
   
   res=max(res, 0.0);
   res=min(res, 16384.0);
 
-  res.w=1.0;
+  res.w=10.0;
   return res;
 }
 
 float4  PS_GaussVResizeFirst(VS_OUTPUT_POST IN, float4 v0 : SV_Position0,
-  uniform Texture2D inputtex, uniform float texsize, uniform float Iteration) : SV_Target
+  uniform Texture2D inputtex, uniform float texsize) : SV_Target
 {
   float4  res;
 
   float2 pxSize = (1/(texsize))*float2(1, ScreenSize.z);
-  res.xyz=FuncVertBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration);
+  res.xyz=FuncVertBlur(inputtex, IN.txcoord0.xy, pxSize*2);
 
-  #if 1 // Double blur. This removes artifacing in the raw bloom texture.
-  // However, it costs more than ENB's bloom and does like 60 passes. 
-  // The aliasing is only noticeable at 100% bloom anyway. 
-  res.xyz+=FuncVertBlur(inputtex, IN.txcoord0.xy, pxSize*2.0, Iteration+1);
-  res.xyz/=2;
-  #endif
-  
-  	res.xyz=max(res.xyz-(ECCInBlack*0.1), 0.0) / max(ECCInWhite-(ECCInBlack*0.1), 0.00001);
+
+  float ECCInBlack = DayNightInt(ECCInBlackExteriorDay, ECCInBlackExteriorDay, ECCInBlackInterior);
+  float ECCInWhite = DayNightInt(ECCInWhiteExteriorDay, ECCInWhiteExteriorDay, ECCInWhiteInterior);
+  float fContrast = DayNightInt(fContrastExteriorDay, fContrastExteriorDay, fContrastInterior);
+  float ECCOutBlack = DayNightInt(ECCOutBlackExteriorDay, ECCOutBlackExteriorDay, ECCOutBlackInterior);
+  float ECCOutWhite = DayNightInt(ECCOutWhiteExteriorDay, ECCOutWhiteExteriorDay, ECCOutWhiteInterior);
+
+
+  	res.xyz=max(res.xyz-ECCInBlack, 0.0) / max(ECCInWhite-ECCInBlack, 0.0001);
 	if (fContrast!=1.0) res.xyz=pow(res.xyz, fContrast);
 	res.xyz=res.xyz*(ECCOutWhite-ECCOutBlack) + ECCOutBlack;
   
   res=max(res, 0.0);
   res=min(res, 16384.0);
 
-  res.w=1.0;
+  res.w=10.0;
   return res;
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+float3 MixColorFetch(float i, float2 coord)
+{   // Shader gods, have mercy.
+    // This actually isn't optimised out by the compiler like I thought. Don't use this.
+    switch (i) {
+        case 0: //return RenderTarget1024; 
+        return RenderTarget1024.Sample(Sampler1, coord);
+        case 1: //return RenderTarget512; 
+        return RenderTarget512.Sample(Sampler1, coord);
+        case 2: //return RenderTarget256; 
+        return RenderTarget256.Sample(Sampler1, coord);
+        case 3: //return RenderTarget128; 
+        return RenderTarget128.Sample(Sampler1, coord);
+        case 4: //return RenderTarget64; 
+        return RenderTarget64.Sample(Sampler1, coord);
+        case 5: //return RenderTarget32; 
+        return RenderTarget32.Sample(Sampler1, coord);
+    }
+    return 0; //TextureColor; //?!
+}
 
 float post_mixer_bloomShape <
   string UIName="Gaussian: Bloom Shape";
@@ -308,12 +264,12 @@ float4  PS_GaussMix(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
     res.xyz += ColorFetch(RenderTarget64, IN.txcoord0.xy)   * weight[4] * (1 + post_mixer_bloomColor*float3(sin(x[4]), sin(x[4]+TAU/3), sin(x[4]-TAU/3)));
     res.xyz += ColorFetch(RenderTarget32, IN.txcoord0.xy)   * weight[5] * (1 + post_mixer_bloomColor*float3(sin(x[5]), sin(x[5]+TAU/3), sin(x[5]-TAU/3)));
     } else { 
-    res.xyz += ColorFetch(RenderTarget1024, IN.txcoord0.xy) * weight[0] * (1 + (post_mixer_bloomColor * 4.0)); 
-    res.xyz += ColorFetch(RenderTarget512, IN.txcoord0.xy)  * weight[1] * (1 + (post_mixer_bloomColor * 2.7889)); 
-    res.xyz += ColorFetch(RenderTarget256, IN.txcoord0.xy)  * weight[2] * (1 + (post_mixer_bloomColor * 0.064)); 
-    res.xyz += ColorFetch(RenderTarget128, IN.txcoord0.xy)  * weight[3] * (1 + (post_mixer_bloomColor * 0.0529)); 
-    res.xyz += ColorFetch(RenderTarget64, IN.txcoord0.xy)   * weight[4] * (1 + (post_mixer_bloomColor * 0.0081)); 
-    res.xyz += ColorFetch(RenderTarget32, IN.txcoord0.xy)   * weight[5] * (1 + (post_mixer_bloomColor * 0.0)); 
+    res.xyz += ColorFetch(RenderTarget1024, IN.txcoord0.xy) * weight[0]; 
+    res.xyz += ColorFetch(RenderTarget512, IN.txcoord0.xy)  * weight[1]; 
+    res.xyz += ColorFetch(RenderTarget256, IN.txcoord0.xy)  * weight[2]; 
+    res.xyz += ColorFetch(RenderTarget128, IN.txcoord0.xy)  * weight[3]; 
+    res.xyz += ColorFetch(RenderTarget64, IN.txcoord0.xy)   * weight[4]; 
+    res.xyz += ColorFetch(RenderTarget32, IN.txcoord0.xy)   * weight[5]; 
     };
 
   res /= weightSum;
@@ -334,7 +290,7 @@ technique11 GaussPass2Bloom <string UIName="Gaussian bloom (Single pass)"; strin
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(TextureDownsampled, 1536.0, 1)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(TextureDownsampled, 1024.0)));
   }
 }
 technique11 GaussPass2Bloom1 
@@ -342,7 +298,7 @@ technique11 GaussPass2Bloom1
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(RenderTarget1024, 1536.0, 1)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(RenderTarget1024, 1024.0)));
   }
 }
 
@@ -353,7 +309,7 @@ technique11 GaussPassMBloom <string UIName="Gaussian bloom (Multiple pass)";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResizeFirst(TextureDownsampled, 1536.0, 2)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResizeFirst(TextureDownsampled, 1024.0)));
   }
 }
 technique11 GaussPassMBloom1 <string RenderTarget="RenderTarget1024";>
@@ -361,7 +317,7 @@ technique11 GaussPassMBloom1 <string RenderTarget="RenderTarget1024";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResizeFirst(TextureColor, 1536.0, 2)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResizeFirst(TextureColor, 1024.0)));
   }
 }
 technique11 GaussPassMBloom2
@@ -369,7 +325,7 @@ technique11 GaussPassMBloom2
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResizeFirst(RenderTarget1024, 512.0, 4)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResizeFirst(RenderTarget1024, 512.0)));
   }
 }
 technique11 GaussPassMBloom3 <string RenderTarget="RenderTarget512";>
@@ -377,7 +333,7 @@ technique11 GaussPassMBloom3 <string RenderTarget="RenderTarget512";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResizeFirst(TextureColor, 512.0, 4)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResizeFirst(TextureColor, 512.0)));
   }
 }
 technique11 GaussPassMBloom4
@@ -385,7 +341,7 @@ technique11 GaussPassMBloom4
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget512, 256.0, 5)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget512, 256.0)));
   }
 }
 technique11 GaussPassMBloom5 <string RenderTarget="RenderTarget256";>
@@ -393,7 +349,7 @@ technique11 GaussPassMBloom5 <string RenderTarget="RenderTarget256";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 256.0, 5)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 256.0)));
   }
 }
 technique11 GaussPassMBloom6
@@ -401,7 +357,7 @@ technique11 GaussPassMBloom6
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget256, 128.0, 6)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget256, 128.0)));
   }
 }
 technique11 GaussPassMBloom7 <string RenderTarget="RenderTarget128";>
@@ -409,7 +365,7 @@ technique11 GaussPassMBloom7 <string RenderTarget="RenderTarget128";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 128.0, 6)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 128.0)));
   }
 }
 technique11 GaussPassMBloom8
@@ -417,7 +373,7 @@ technique11 GaussPassMBloom8
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget128, 64.0, 7)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget128, 64.0)));
   }
 }
 technique11 GaussPassMBloom9 <string RenderTarget="RenderTarget64";>
@@ -425,7 +381,7 @@ technique11 GaussPassMBloom9 <string RenderTarget="RenderTarget64";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 64.0, 7)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 64.0)));
   }
 }
 technique11 GaussPassMBloom10 
@@ -433,7 +389,7 @@ technique11 GaussPassMBloom10
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget64, 32.0, 8)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussHResize(RenderTarget64, 32.0)));
   }
 }
 technique11 GaussPassMBloom11 <string RenderTarget="RenderTarget32";>
@@ -441,7 +397,7 @@ technique11 GaussPassMBloom11 <string RenderTarget="RenderTarget32";>
   pass p0
   {
     SetVertexShader(CompileShader(vs_5_0, VS_Quad()));
-    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 32.0, 8)));
+    SetPixelShader(CompileShader(ps_5_0, PS_GaussVResize(TextureColor, 32.0)));
   }
 }
 // last pass output to bloom texture

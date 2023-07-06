@@ -1,5 +1,3 @@
-//#include "Reforged/ReforgedUITutorial.fxh"
-
 int		TonemapStart < string UIName = "-------<<< Superl3 ENB >>>-------"; string UIWidget = "spinner"; int UIMin = 0; int UIMax = 0; > = { 0.0 };
 int		strExtDay < string UIName = "--------| Exterior Day |--------"; string UIWidget = "spinner"; int UIMin = 0; int UIMax = 0; > = { 0.0 };
 float	ExtDayBrightness
@@ -200,6 +198,14 @@ float	IntPedestal
 
 int		TonemapEnd < string UIName = "----------------------------------"; string UIWidget = "spinner"; int UIMin = 0; int UIMax = 0; > = { 0.0 };
 
+/*
+* float Desaturation: Changes the amount of pre-tonemap desaturation to apply to the image. Min: 0.0, Max: 1.0, Default: 0.7
+* float HueShift: Changes the amount of hueshift allowed. Min: 0.0, Max: 1.0, Default: 0.4
+* float Resaturation: A midrange saturation boost that happens post-tonemapping. Min: 0.0, Max: 1.0+, Default: 0.3
+* float Saturation: Just a standard saturation control, might as well add it here to enjoy the quality saturation of ICtCp Min: 0.0, Max: 2.0+, Default: 1.0
+* To match standard tonemapping (essentially disabling the effect), set the parameters to the following: Desaturation = 0 HueShift = 1 Resaturation = 0
+*/
+
 float	Desaturation
 <
 	string UIName = "Desaturation";
@@ -221,6 +227,45 @@ float	Resaturation
 	float UIMin = 0.0;
 	float UIMax = 1.0;
 > = { 0.3 };
+
+/*
+* 
+float3 applyTonemap(float3 color) {
+	// insert your tonemapping here
+}
+
+#include "ictcp_colorspaces.fx"
+
+float3 frostbyteTonemap(float3 color) {
+	float3 ictcp = rgb2ictcp(color.xyz);
+	float saturation = pow(smoothstep(1.0, 1.0 - Desaturation, ictcp.x), 1.3);
+	color.xyz = ictcp2rgb(ictcp * float3(1.0, saturation.xx));
+	float3 perChannel = applyTonemap(color.xyz);
+	float peak = max(color.x, max(color.y, color.z));
+	color.xyz *= rcp(peak + 1e-6); color.xyz *= applyTonemap(peak);
+	color.xyz = lerp(color.xyz, perChannel, HueShift);
+	color.xyz = rgb2ictcp(color.xyz);
+	float saturationBoost = Resaturation * smoothstep(1.0, 0.5, ictcp.x);
+	color.yz = lerp(color.yz, ictcp.yz * color.x / max(1e-3, ictcp.x), saturationBoost);
+	color.yz *= Saturation; color.xyz = ictcp2rgb(color.xyz); return color;
+}
+
+float naturalShoulder(float x) {
+	return 1.0 - exp(-x);
+}
+float naturalShoulder(float x, float t) {
+	float v1 = x; float v2 = t + (1.0 - t) * naturalShoulder((x - t) / (1.0 - t));
+	return x < t ? v1 : v2;
+}
+float3 naturalShoulder(float3 x, float t) {
+	return float3( naturalShoulder(x.x, t), naturalShoulder(x.y, t), naturalShoulder(x.z, t) );
+}
+float3 applyTonemap(float3 color) {
+// TODO: Add parameters or consts for LinearSection and Whitepoint.
+// Try 0.25 for LinearSection and 4.0 for Whitepoint as a start
+	return naturalShoulder(color.xyz, LinearSection) * rcp(naturalShoulder(Whitepoint, LinearSection));
+}
+*/
 //changes in range 0..1, 0 means that night time, 1 - day time
 
 
@@ -298,11 +343,6 @@ float3 Tonemap_Uchimura(float3 x, float P, float a, float m, float l, float c, f
 	return T * w0 + L * w1 + S * w2;
 }
 
-float DayNightInt(float ExtDay, float ExtNight, float Int) {
-	float Ext = lerp(ExtNight, ExtDay, ENightDayFactor);
-	return lerp(Ext, Int, EInteriorFactor);
-}
-
 float naturalShoulder(float x)
 {
 	return 1.0 - exp(-x);
@@ -331,12 +371,13 @@ float3 naturalShoulder(float3 x, float t)
 		);
 }
 
-float3 Tonemap_Uchimura(float3 x) {
+float3 Tonemap_Uchimura(float3 x, float depth) {
 
 	float LinearSection = 0.25;
-	float Whitepoint = 4.0;
+	float Whitepoint = 1.5;
 
 	float Brightness = DayNightInt(ExtDayBrightness, ExtNightBrightness, IntBrightness);
+	Brightness = lerp(Brightness, 1.0, depth);
 	float Contrast = DayNightInt(ExtDayContrast, ExtNightContrast, IntContrast);
 	float LinearSectionStart = DayNightInt(ExtDayLinearSectionStart, ExtNightLinearSectionStart, IntLinearSectionStart);
 	float LinearSectionLength = DayNightInt(ExtDayLinearSectionLength, ExtNightLinearSectionLength, IntLinearSectionLength);
@@ -348,17 +389,17 @@ float3 Tonemap_Uchimura(float3 x) {
 }
 
 #include "ictcp_colorspaces.fx"
-float3 frostbyteTonemap(float3 color)
+float3 frostbyteTonemap(float3 color, float depth)
 {
 	float3 ictcp = rgb2ictcp(color.xyz);
 	float saturation = pow(smoothstep(1.0, 1.0 - Desaturation, ictcp.x), 1.3);
 	color.xyz = ictcp2rgb(ictcp * float3(1.0, saturation.xx));
 
-	float3 perChannel = Tonemap_Uchimura(color.xyz);
+	float3 perChannel = Tonemap_Uchimura(color.xyz, depth);
 
 	float peak = max(color.x, max(color.y, color.z));
 	color.xyz *= rcp(peak + 1e-6);
-	color.xyz *= Tonemap_Uchimura(peak);
+	color.xyz *= Tonemap_Uchimura(peak, depth);
 
 	color.xyz = lerp(color.xyz, perChannel, HueShift);
 

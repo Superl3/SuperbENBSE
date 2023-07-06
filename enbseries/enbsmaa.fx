@@ -237,8 +237,8 @@ static float bypass_cornerRounding     = smaa_presets[smaa_quality].w;
 #endif
 
 
-Texture2D SMAA_AreaTex   < string UIName = "SMAA Area Tex";   string ResourceName = "/enbseries/Textures/SMAA_AreaTex.dds";   >;
-Texture2D SMAA_SearchTex < string UIName = "SMAA Search Tex"; string ResourceName = "/enbseries/Textures/SMAA_SearchTex.dds"; >;
+Texture2D SMAA_AreaTex   < string UIName = "SMAA Area Tex";   string ResourceName = "/Textures/SMAA_AreaTex.dds";   >;
+Texture2D SMAA_SearchTex < string UIName = "SMAA Search Tex"; string ResourceName = "/Textures/SMAA_SearchTex.dds"; >;
 
 struct VS_INPUT_SMAA
 {

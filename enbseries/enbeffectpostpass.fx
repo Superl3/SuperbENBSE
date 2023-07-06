@@ -289,3 +289,51 @@ technique11 CAS < string UIName = "CAS"; >
 #define  PASSNAME1   CAS2
 #define  PASSNAME2   CAS3
 #include "enbsmaa.fx" 
+
+technique11 SMAA_Pass < string RenderTarget = SMAA_STRING(SMAA_EDGE_TEX); string UIName = "eVx - SMAA"; >
+{
+	pass Clear
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SMAAClear()));
+		SetPixelShader(CompileShader(ps_5_0, PS_SMAAClear()));
+	}
+
+	pass EdgeDetection
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SMAAEdgeDetection()));
+		SetPixelShader(CompileShader(ps_5_0, PS_SMAAEdgeDetection()));
+	}
+}
+
+technique11 SMAA_Pass1 < string RenderTarget = SMAA_STRING(SMAA_BLEND_TEX); >
+{
+	pass Clear
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SMAAClear()));
+		SetPixelShader(CompileShader(ps_5_0, PS_SMAAClear()));
+	}
+
+	pass BlendingWeightCalculation
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SMAABlendingWeightCalculation()));
+		SetPixelShader(CompileShader(ps_5_0, PS_SMAABlendingWeightCalculation()));
+	}
+}
+
+technique11 SMAA_Pass2
+{
+	pass NeighborhoodBlending
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_SMAANeighborhoodBlending()));
+		SetPixelShader(CompileShader(ps_5_0, PS_SMAANeighborhoodBlending()));
+	}
+}
+
+technique11 SMAA_Pass3
+{
+	pass p0
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_PostProcess()));
+		SetPixelShader(CompileShader(ps_5_0, PS_Sharpening()));
+	}
+}

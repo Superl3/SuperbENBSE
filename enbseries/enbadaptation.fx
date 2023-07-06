@@ -15,10 +15,16 @@
 int   Title0        < string UIName="\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4"; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 int   Title1        < string UIName=" "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 float Bias          < string UIName="Auto Exposure Bias (log2 scale)"; > = {0.0};
-float MaxBrightness < string UIName="Adapt Max Brightness (log2 scale)"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
-float MinBrightness < string UIName="Adapt Min Brightness (log2 scale)"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float MaxBrightness < string UIName="Adapt Max Brightness (log2 scale)"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
+float MinBrightness < string UIName="Adapt Min Brightness (log2 scale)"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
 float LowPercent    < string UIName="Adapt Low  Percent";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercent   < string UIName="Adapt High Percent";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
+
+float BiasNight          < string UIName="Auto Exposure Night"; > = {0.0};
+float MaxBrightnessNight < string UIName="Adapt Max Brightness Night"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
+float MinBrightnessNight < string UIName="Adapt Min Brightness Night"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
+float LowPercentNight    < string UIName="Adapt Low  Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
+float HighPercentNight   < string UIName="Adapt High Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
 
 //+++++++++++++++++++++++++++++
 //external enb parameters, do not modify (shared)
@@ -53,10 +59,11 @@ float4	tempInfo2; // xy = cursor position of previous left click, zw = cursor po
 float4				AdaptationParameters; //x = AdaptationMin, y = AdaptationMax, z = AdaptationSensitivity, w = AdaptationTime multiplied by time elapsed
 Texture2D			TextureCurrent;
 Texture2D			TexturePrevious;
+Texture2D TextureDepth; // scene depth R32F 32 bit hdr format, screen size. PLEASE AVOID USING IT BECAUSE OF ALIASING ARTIFACTS, UNLESS YOU FIX THEM
 
 SamplerState		Sampler0 {
 	Filter = MIN_MAG_MIP_POINT;//MIN_MAG_MIP_LINEAR;
-	AddressU = Clamp;	AddressV = Clamp;
+AddressU = Clamp;	AddressV = Clamp;
 };
 
 SamplerState		Sampler1 {
@@ -103,6 +110,9 @@ float4	PS_Downsample( float4 pos : SV_POSITION, float2 txcoord0 : TEXCOORD0) : S
 //TextureCurrent size is 16*16
 //output and input textures are R32 float format (red channel only)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+float DayNight(float day, float night) {
+    return lerp(night, day, ENightDayFactor);
+}
 
 float4	PS_Histogram() : SV_Target
 {
@@ -113,7 +123,6 @@ float4	PS_Histogram() : SV_Target
     {
         bin[k]=float4(0.0, 0.0, 0.0, 0.0);
     }
-
     [loop]
     for(int i=0; i < 16.0; i++)
     {
@@ -122,7 +131,7 @@ float4	PS_Histogram() : SV_Target
         for(int j=0; j<16.0; j++)
         {
             float  color   = TextureCurrent.SampleLevel(Sampler0, coord.xy, 0.0).r;
-            float  level   = saturate(( color + 5.0 ) / 7) * 63; // [-9, 3]
+           float level = saturate(( color + 9.0 ) / 12) * 63;
             bin[ level * 0.25 ] += float4(0.0, 1.0, 2.0, 3.0) == float4(trunc(level % 4).xxxx); //bitwise ?
             coord.y  += coord.w;
         }
@@ -130,7 +139,11 @@ float4	PS_Histogram() : SV_Target
     }
 
     float2 adaptAnchor = 0.5; //.x = high, .y = low
-    float2 accumulate  = float2( HighPercent - 1.0, LowPercent - 1.0) * 256.0;
+
+    float highPercent = DayNight(HighPercent, HighPercentNight);
+    float lowPercent = DayNight(LowPercent, LowPercentNight);
+
+    float2 accumulate  = float2( highPercent - 1.0, lowPercent - 1.0) * 256.0;
 
     [loop]
     for(int l=15; l>0; l--)
@@ -148,8 +161,13 @@ float4	PS_Histogram() : SV_Target
         adaptAnchor = (accumulate.xy < bin[l].xx)? l * 4.0 + accumulate.xy / bin[l].xx + 0.0: adaptAnchor;
     }
 
+
+    float bias = DayNight(Bias, BiasNight);
+    float minBrightness = DayNight(MinBrightness, MinBrightnessNight);
+    float maxBrightness = DayNight(MaxBrightness, MaxBrightnessNight);
+
     float adapt = (adaptAnchor.x + adaptAnchor.y) * 0.5 / 63.0  * 7.0 - 5.0;
-          adapt =  pow(2.0, clamp( adapt, MinBrightness, MaxBrightness) + Bias);  // min max on log2 scale
+          adapt =  pow(2.0, clamp( adapt, minBrightness,  maxBrightness) + bias);  // min max on log2 scale
 
    	return lerp(TexturePrevious.Sample(Sampler0, 0.5).x, adapt, AdaptationParameters.w);
 }

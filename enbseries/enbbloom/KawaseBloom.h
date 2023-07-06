@@ -10,7 +10,7 @@
 float3 KawaseBlurFilter( Texture2D tex, float2 texCoord, float2 pixelSize, float iteration )
 {
     float2 texCoordSample;
-    float2 halfPixelSize = pixelSize / 1.0f;
+    float2 halfPixelSize = pixelSize / 2.0f;
     float2 dUV = ( pixelSize.xy * float2( iteration, iteration ) ) + halfPixelSize.xy;
 
     float3 cOut;
@@ -19,7 +19,7 @@ float3 KawaseBlurFilter( Texture2D tex, float2 texCoord, float2 pixelSize, float
     texCoordSample.x = texCoord.x - dUV.x;
     texCoordSample.y = texCoord.y + dUV.y;    
     cOut = tex.Sample(Sampler1, texCoordSample ).xyz;
-	
+
     // Sample top right pixel
     texCoordSample.x = texCoord.x + dUV.x;
     texCoordSample.y = texCoord.y + dUV.y;
@@ -29,34 +29,14 @@ float3 KawaseBlurFilter( Texture2D tex, float2 texCoord, float2 pixelSize, float
     texCoordSample.x = texCoord.x + dUV.x;
     texCoordSample.y = texCoord.y - dUV.y;
     cOut += tex.Sample(Sampler1, texCoordSample ).xyz;
-	
+
     // Sample bottom left pixel
     texCoordSample.x = texCoord.x - dUV.x;
     texCoordSample.y = texCoord.y - dUV.y;
     cOut += tex.Sample(Sampler1, texCoordSample ).xyz;
 
-	// Sample top center
-    texCoordSample.x = texCoord.x;
-    texCoordSample.y = texCoord.y + dUV.y;    
-    cOut += tex.Sample(Sampler1, texCoordSample ).xyz;
-	
-	// Sample right center
-    texCoordSample.x = texCoord.x + dUV.x;
-    texCoordSample.y = texCoord.y;
-    cOut += tex.Sample(Sampler1, texCoordSample ).xyz;
-	
-	// Sample bottom center
-    texCoordSample.x = texCoord.x;
-    texCoordSample.y = texCoord.y - dUV.y;
-    cOut += tex.Sample(Sampler1, texCoordSample ).xyz;
-	
-	// Sample left center
-    texCoordSample.x = texCoord.x - dUV.x;
-    texCoordSample.y = texCoord.y;
-    cOut += tex.Sample(Sampler1, texCoordSample ).xyz;
-
     // Average 
-    cOut *= 0.125f;
+    cOut *= 0.25f;
     
     return cOut;
 }
@@ -102,7 +82,13 @@ float4  PS_KawaseBloomFirst(VS_OUTPUT_POST IN, float4 v0 : SV_Position0,
   res.xyz/=2;
   #endif
 
-    res.xyz=max(res.xyz-(ECCInBlack*0.1), 0.0) / max(ECCInWhite-(ECCInBlack*0.1), 0.0001);
+  float ECCInBlack = DayNightInt(ECCInBlackExteriorDay, ECCInBlackExteriorDay, ECCInBlackInterior);
+  float ECCInWhite = DayNightInt(ECCInWhiteExteriorDay, ECCInWhiteExteriorDay, ECCInWhiteInterior);
+  float fContrast = DayNightInt(fContrastExteriorDay, fContrastExteriorDay, fContrastInterior);
+  float ECCOutBlack = DayNightInt(ECCOutBlackExteriorDay, ECCOutBlackExteriorDay, ECCOutBlackInterior);
+  float ECCOutWhite = DayNightInt(ECCOutWhiteExteriorDay, ECCOutWhiteExteriorDay, ECCOutWhiteInterior);
+
+    res.xyz=max(res.xyz-ECCInBlack, 0.0) / max(ECCInWhite-ECCInBlack, 0.0001);
 	if (fContrast!=1.0) res.xyz=pow(res.xyz, fContrast);
 	res.xyz=res.xyz*(ECCOutWhite-ECCOutBlack) + ECCOutBlack;
   
@@ -146,8 +132,11 @@ float4  PS_KawaseMix2(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
     res.xyz+=RenderTarget128.Sample(Sampler1, IN.txcoord0.xy)*0.45;
     res.xyz+=RenderTarget64.Sample(Sampler1, IN.txcoord0.xy) *0.32;
     res.xyz+=RenderTarget32.Sample(Sampler1, IN.txcoord0.xy) *0.23;
-    res.xyz /= 1.0;
+    res.xyz /= 2.2;
   #endif
+
+  float3 Temp = AvgLuma(res.xyz).w;
+  res.xyz = lerp(Temp.xyz, res.xyz, fSaturation);
 
   res=max(res, 0.0);
   res=min(res, 16384.0);

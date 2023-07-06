@@ -7,9 +7,6 @@
 //Warning! In this version Weather index is not yet implemented
 
 //post processing mode. Change value (could be 1, 2, 3, 4). Every mode have own internal parameters, look below
-#ifndef POSTPROCESS
-#define POSTPROCESS	0
-#endif
 
 bool	ditherbool <
 	string UIName = "Dithering";
@@ -21,76 +18,6 @@ bool	ditherbool <
 //internal parameters, modify or add new
 //+++++++++++++++++++++++++++++
 //modify these values to tweak various color processing
-//POSTPROCESS 1
-float	EAdaptationMinV1 = 0.01;
-float	EAdaptationMaxV1 = 0.07;
-float	EContrastV1 = 0.95;
-float	EColorSaturationV1 = 1.0;
-float	EToneMappingCurveV1 = 6.0;
-
-//POSTPROCESS 2
-//float	EBrightnessV2=2.5;
-float	EAdaptationMinV2 = 0.05;
-float	EAdaptationMaxV2 = 0.05;//0.125;
-float	EToneMappingCurveV2 = 8.0;
-float	EIntensityContrastV2 = 1.0;
-float	EColorSaturationV2 = 1.0;
-float	EToneMappingOversaturationV2 = 180.0;
-
-//POSTPROCESS 3
-float	EAdaptationMinV3 = 0.05;
-float	EAdaptationMaxV3 = 0.125;
-float	EToneMappingCurveV3 = 4.0;
-float	EToneMappingOversaturationV3 = 60.0;
-
-//POSTPROCESS 4
-float	EAdaptationMinV4 = 0.2;
-float	EAdaptationMaxV4 = 0.125;
-float	EBrightnessCurveV4 = 0.7;
-float	EBrightnessMultiplierV4 = 0.45;
-float	EBrightnessToneMappingCurveV4 = 0.5;
-/*
-//example parameters with annotations for in-game editor
-float	ExampleScalar
-<
-	string UIName="Example scalar";
-	string UIWidget="spinner";
-	float UIMin=0.0;
-	float UIMax=1000.0;
-> = {1.0};
-
-float3	ExampleColor
-<
-	string UIName = "Example color";
-	string UIWidget = "color";
-> = {0.0, 1.0, 0.0};
-
-float4	ExampleVector
-<
-	string UIName="Example vector";
-	string UIWidget="vector";
-> = {0.0, 1.0, 0.0, 0.0};
-
-int	ExampleQuality
-<
-	string UIName="Example quality";
-	string UIWidget="quality";
-	int UIMin=0;
-	int UIMax=3;
-> = {1};
-
-Texture2D ExampleTexture
-<
-	string UIName = "Example texture";
-	string ResourceName = "test.bmp";
->;
-SamplerState ExampleSampler
-{
-	Filter = MIN_MAG_MIP_LINEAR;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-*/
 
 
 #ifdef E_CC_PROCEDURAL
@@ -158,7 +85,7 @@ float	ECCContrast
 	float UIMin = 0.0;
 	float UIMax = 10.0;
 > = { 1.0 };
-
+/*
 float	ECCSaturation
 <
 	string UIName = "CC: Saturation";
@@ -166,6 +93,7 @@ float	ECCSaturation
 	float UIMin = 0.0;
 	float UIMax = 10.0;
 > = { 1.0 };
+*/
 
 float	ECCDesaturateShadows
 <
@@ -174,7 +102,7 @@ float	ECCDesaturateShadows
 	float UIMin = 0.0;
 	float UIMax = 1.0;
 > = { 0.0 };
-
+/*
 float3	ECCColorBalanceShadows <
 	string UIName = "CC: Color balance shadows";
 	string UIWidget = "Color";
@@ -199,6 +127,8 @@ float3	ECCChannelMixerB <
 	string UIName = "CC: Channel mixer B";
 	string UIWidget = "Color";
 > = { 0.0, 0.0, 1.0 };
+*/
+
 #endif //E_CC_PROCEDURAL
 
 //+++++++++++++++++++++++++++++
@@ -221,7 +151,7 @@ float	ENightDayFactor;
 //changes 0 or 1. 0 means that exterior, 1 - interior
 float	EInteriorFactor;
 float	FieldOfView;
-
+#include "enbdniseperation.fx"
 #include "enbeffectsuperl3.fx"
 
 //+++++++++++++++++++++++++++++
@@ -309,6 +239,24 @@ VS_OUTPUT_POST	VS_Draw(VS_INPUT_POST IN)
 	return OUT;
 }
 
+float4	PS_DrawBloomTexture(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
+{
+	float4 res;
+	res.xyz = TextureBloom.Sample(Sampler1, IN.txcoord0.xy);
+	res.w = 1.0;
+	return res;
+}
+float4	PS_DrawAdaptationTexture(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
+{
+	float4 res;
+	res.xyz = TextureAdaptation.Sample(Sampler0, IN.txcoord0.xy);
+	res.y = res.x;
+	res.z = res.x;
+	res.w = 1.0;
+	return res;
+}
+
+
 
 float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 {
@@ -316,15 +264,15 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float4	color;
 
 	color = TextureColor.Sample(Sampler0, IN.txcoord0.xy); //hdr scene color
+	//return color;
 
 	float3	lens;
 	lens.xyz = TextureLens.Sample(Sampler1, IN.txcoord0.xy).xyz;
 	color.xyz += lens.xyz * ENBParams01.y; //lens amount
 
 	float3	bloom = TextureBloom.Sample(Sampler1, IN.txcoord0.xy);
-
-	bloom.xyz = bloom - color;
-	bloom.xyz = max(bloom, 0.0);
+	//bloom.xyz = bloom - color;
+	//bloom.xyz = max(bloom, 0.0);
 	color.xyz += bloom * ENBParams01.x; //bloom amount
 
 	float	grayadaptation = TextureAdaptation.Sample(Sampler0, IN.txcoord0.xy).x;
@@ -333,91 +281,10 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float AdaptationMax = DayNightInt(ExtDayAdaptationMax, ExtNightAdaptationMax, IntAdaptationMax);
 	float AdaptationMin = DayNightInt(ExtDayAdaptationMin, ExtNightAdaptationMin, IntAdaptationMin);
 	color.xyz = color.xyz / (grayadaptation*AdaptationMax + AdaptationMin);
-#if (POSTPROCESS==0)
 
-	color.xyz = frostbyteTonemap(color.xyz);
-	// Somewhere at the end of your shader pipeline:
-	if (ditherbool) {
-		color.xyz = lin2srgb_fast(color.xyz);
-		color.xyz = srgb2lin_fast(color.xyz + triDither(color.xyz, IN.txcoord0.xy, Timer.x));
-	}
-#endif
-
-
-#if (POSTPROCESS==1)
-
-	grayadaptation = max(grayadaptation, 0.0);
-	grayadaptation = min(grayadaptation, 50.0);
-	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV1 + EAdaptationMinV1);
-
-	float cgray = dot(color.xyz, float3(0.27, 0.67, 0.06));
-	cgray = pow(cgray, EContrastV1);
-	float3 poweredcolor = pow(color.xyz, EColorSaturationV1);
-	float newgray = dot(poweredcolor.xyz, float3(0.27, 0.67, 0.06));
-	color.xyz = poweredcolor.xyz*cgray / (newgray + 0.0001);
-
-	float3	luma = color.xyz;
-	float	lumamax = 300.0;
-	color.xyz = (color.xyz * (1.0 + color.xyz / lumamax)) / (color.xyz + EToneMappingCurveV1);
-
-#endif
-
-
-
-#if (POSTPROCESS==2)
-
-	grayadaptation = max(grayadaptation, 0.0);
-	grayadaptation = min(grayadaptation, 50.0);
-	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV2 + EAdaptationMinV2);
-
-	//color.xyz*=EBrightnessV2;
-	color.xyz += 0.000001;
-	float3 xncol = normalize(color.xyz);
-	float3 scl = color.xyz / xncol.xyz;
-	scl = pow(scl, EIntensityContrastV2);
-	xncol.xyz = pow(xncol.xyz, EColorSaturationV2);
-	color.xyz = scl * xncol.xyz;
-
-	float	lumamax = EToneMappingOversaturationV2;
-	color.xyz = (color.xyz * (1.0 + color.xyz / lumamax)) / (color.xyz + EToneMappingCurveV2);
-
-#endif
-
-
-#if (POSTPROCESS==3)
-
-	grayadaptation = max(grayadaptation, 0.0);
-	grayadaptation = min(grayadaptation, 50.0);
-	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV3 + EAdaptationMinV3);
-
-	float	lumamax = EToneMappingOversaturationV3;
-	color.xyz = (color.xyz * (1.0 + color.xyz / lumamax)) / (color.xyz + EToneMappingCurveV3);
-
-#endif
-
-
-#if (POSTPROCESS==4)
-
-	grayadaptation = max(grayadaptation, 0.0);
-	grayadaptation = min(grayadaptation, 50.0);
-	color.xyz = color.xyz / (grayadaptation*EAdaptationMaxV4 + EAdaptationMinV4);
-
-	float Y = dot(color.xyz, float3(0.299, 0.587, 0.114)); //0.299 * R + 0.587 * G + 0.114 * B;
-	float U = dot(color.xyz, float3(-0.14713, -0.28886, 0.436)); //-0.14713 * R - 0.28886 * G + 0.436 * B;
-	float V = dot(color.xyz, float3(0.615, -0.51499, -0.10001)); //0.615 * R - 0.51499 * G - 0.10001 * B;
-	Y = pow(Y, EBrightnessCurveV4);
-	Y = Y * EBrightnessMultiplierV4;
-	//	Y=Y/(Y+EBrightnessToneMappingCurveV4);
-	//	float	desaturatefact=saturate(Y*Y*Y*1.7);
-	//	U=lerp(U, 0.0, desaturatefact);
-	//	V=lerp(V, 0.0, desaturatefact);
-		color.xyz = V * float3(1.13983, -0.58060, 0.0) + U * float3(0.0, -0.39465, 2.03211) + Y;
-
-		color.xyz = max(color.xyz, 0.0);
-		color.xyz = color.xyz / (color.xyz + EBrightnessToneMappingCurveV4);
-
-	#endif
-
+	float depth = TextureDepth.Sample(Sampler1, IN.txcoord0.xy, 0).x;
+	depth = min(depth * rcp(mad(depth, -2999.0, 3000.0)), 1);
+	color.xyz = frostbyteTonemap(color.xyz, depth);
 
 	#ifdef E_CC_PALETTE
 		//activated by UsePaletteTexture=true
@@ -455,10 +322,6 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 		//+++ contrast
 		color = (color - ECCContrastGrayLevel) * ECCContrast + ECCContrastGrayLevel;
 
-		//+++ saturation
-		tempgray = dot(color.xyz, 0.3333);
-		color = lerp(tempgray, color, ECCSaturation);
-
 		//+++ desaturate shadows
 		tempgray = dot(color.xyz, 0.3333);
 		tempvar.x = saturate(1.0 - tempgray);
@@ -466,20 +329,12 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 		tempvar.x *= tempvar.x;
 		color = lerp(color, tempgray, ECCDesaturateShadows*tempvar.x);
 
-		//+++ color balance
-		color = saturate(color);
-		tempgray = dot(color.xyz, 0.3333);
-		float2	shadow_highlight = float2(1.0 - tempgray, tempgray);
-		shadow_highlight *= shadow_highlight;
-		color.rgb += (ECCColorBalanceHighlights*2.0 - 1.0)*color * shadow_highlight.x;
-		color.rgb += (ECCColorBalanceShadows*2.0 - 1.0)*(1.0 - color) * shadow_highlight.y;
-
-		//+++ channel mixer
-		tempcolor = color;
-		color.r = dot(tempcolor, ECCChannelMixerR);
-		color.g = dot(tempcolor, ECCChannelMixerG);
-		color.b = dot(tempcolor, ECCChannelMixerB);
 	#endif //E_CC_PROCEDURAL
+		// Somewhere at the end of your shader pipeline:
+		if (ditherbool) {
+			color.xyz = lin2srgb_fast(color.xyz);
+			color.xyz = srgb2lin_fast(color.xyz + triDither(color.xyz, IN.txcoord0.xy, Timer.x));
+		}
 
 		res.xyz = saturate(color);
 		res.w = 1.0;
@@ -557,6 +412,23 @@ float4	PS_DrawOriginal(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 
 #include "enbeffect_AdaptTool.fxh"
 
+technique11 TestBloom < string UIName = "BloomTexture"; >
+{
+	pass p0
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_Draw()));
+		SetPixelShader(CompileShader(ps_5_0, PS_DrawBloomTexture()));
+	}
+}
+
+technique11 TestAdaptation < string UIName = "AdaptationTexture"; >
+{
+	pass p0
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_Draw()));
+		SetPixelShader(CompileShader(ps_5_0, PS_DrawAdaptationTexture()));
+	}
+}
 
 technique11 Draw < string UIName = "ENBSeries"; >
 {
@@ -570,13 +442,12 @@ technique11 Draw < string UIName = "ENBSeries"; >
 }
 
 
-technique11 ORIGINALPOSTPROCESS <string UIName="Vanilla";>
+technique11 ORIGINALPOSTPROCESS < string UIName = "Vanilla"; >
 {
-   pass p0
-   {
-      SetVertexShader(CompileShader(vs_5_0, VS_Draw()));
-      SetPixelShader(CompileShader(ps_5_0, PS_DrawOriginal()));
-   }
+	pass p0
+	{
+		SetVertexShader(CompileShader(vs_5_0, VS_Draw()));
+		SetPixelShader(CompileShader(ps_5_0, PS_DrawOriginal()));
+	}
 }
-
 
