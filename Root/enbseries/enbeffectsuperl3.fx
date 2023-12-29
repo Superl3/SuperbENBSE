@@ -14,20 +14,20 @@ float	ExtDaySaturation
 	float UIMin = 0.0;
 	float UIMax = 2.0;
 > = { 1.0 };
-float	ExtDayAdaptationMax
-<
-	string UIName = "ED: AdaptationMax";
-	string UIWidget = "Spinner";
-	float UIMin = 0.01;
-	float UIMax = 5.00;
-> = { 1 };
-float	ExtDayAdaptationMin
-<
-	string UIName = "ED: AdaptationMin";
-	string UIWidget = "Spinner";
-	float UIMin = 0.01;
-	float UIMax = 5.00;
-> = { 1 };
+// float	ExtDayAdaptationMax
+// <
+// 	string UIName = "ED: AdaptationMax";
+// 	string UIWidget = "Spinner";
+// 	float UIMin = 0.01;
+// 	float UIMax = 5.00;
+// > = { 1 };
+// float	ExtDayAdaptationMin
+// <
+// 	string UIName = "ED: AdaptationMin";
+// 	string UIWidget = "Spinner";
+// 	float UIMin = 0.01;
+// 	float UIMax = 5.00;
+// > = { 1 };
 float	ExtDayContrast
 <
 	string UIName = "ED: Contrast";
@@ -80,20 +80,20 @@ float	ExtNightSaturation
 	float UIMin = 0.0;
 	float UIMax = 2.0;
 > = { 1.0 };
-float	ExtNightAdaptationMax
-<
-	string UIName = "EN: AdaptationMax";
-	string UIWidget = "Spinner";
-	float UIMin = 0.01;
-	float UIMax = 5.00;
-> = { 1 };
-float	ExtNightAdaptationMin
-<
-	string UIName = "EN: AdaptationMin";
-	string UIWidget = "Spinner";
-	float UIMin = 0.01;
-	float UIMax = 5.00;
-> = { 1 };
+// float	ExtNightAdaptationMax
+// <
+// 	string UIName = "EN: AdaptationMax";
+// 	string UIWidget = "Spinner";
+// 	float UIMin = 0.01;
+// 	float UIMax = 5.00;
+// > = { 1 };
+// float	ExtNightAdaptationMin
+// <
+// 	string UIName = "EN: AdaptationMin";
+// 	string UIWidget = "Spinner";
+// 	float UIMin = 0.01;
+// 	float UIMax = 5.00;
+// > = { 1 };
 float	ExtNightContrast
 <
 	string UIName = "EN: Contrast";
@@ -146,20 +146,20 @@ float	IntSaturation
 	float UIMin = 0.0;
 	float UIMax = 2.0;
 > = { 1.15 };
-float	IntAdaptationMax
-<
-	string UIName = "IN: AdaptationMax";
-	string UIWidget = "Spinner";
-	float UIMin = 0.01;
-	float UIMax = 5.00;
-> = { 0.75 };
-float	IntAdaptationMin
-<
-	string UIName = "IN: AdaptationMin";
-	string UIWidget = "Spinner";
-	float UIMin = 0.01;
-	float UIMax = 5.00;
-> = { 0.5 };
+// float	IntAdaptationMax
+// <
+// 	string UIName = "IN: AdaptationMax";
+// 	string UIWidget = "Spinner";
+// 	float UIMin = 0.01;
+// 	float UIMax = 5.00;
+// > = { 0.75 };
+// float	IntAdaptationMin
+// <
+// 	string UIName = "IN: AdaptationMin";
+// 	string UIWidget = "Spinner";
+// 	float UIMin = 0.01;
+// 	float UIMax = 5.00;
+// > = { 0.5 };
 float	IntContrast
 <
 	string UIName = "IN: Contrast";

@@ -13,7 +13,6 @@ bool	ditherbool <
 	string UIWidget = "Toggle";
 > = true;
 
-
 //+++++++++++++++++++++++++++++
 //internal parameters, modify or add new
 //+++++++++++++++++++++++++++++
@@ -278,9 +277,11 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float	grayadaptation = TextureAdaptation.Sample(Sampler0, IN.txcoord0.xy).x;
 	grayadaptation = max(grayadaptation, 0.0);
 	grayadaptation = min(grayadaptation, 50.0);
-	float AdaptationMax = DayNightInt(ExtDayAdaptationMax, ExtNightAdaptationMax, IntAdaptationMax);
-	float AdaptationMin = DayNightInt(ExtDayAdaptationMin, ExtNightAdaptationMin, IntAdaptationMin);
-	color.xyz = color.xyz / (grayadaptation*AdaptationMax + AdaptationMin);
+	//float AdaptationMax = DayNightInt(ExtDayAdaptationMax, ExtNightAdaptationMax, IntAdaptationMax);
+	//float AdaptationMin = DayNightInt(ExtDayAdaptationMin, ExtNightAdaptationMin, IntAdaptationMin);
+	//color.xyz = color.xyz / (grayadaptation*AdaptationMax + AdaptationMin);
+
+	color.xyz = color.xyz / grayadaptation;
 
 	float depth = TextureDepth.Sample(Sampler1, IN.txcoord0.xy, 0).x;
 	depth = min(depth * rcp(mad(depth, -2999.0, 3000.0)), 1);
@@ -449,5 +450,6 @@ technique11 ORIGINALPOSTPROCESS < string UIName = "Vanilla"; >
 		SetVertexShader(CompileShader(vs_5_0, VS_Draw()));
 		SetPixelShader(CompileShader(ps_5_0, PS_DrawOriginal()));
 	}
+	
+	pass ADAPT_TOOL_PASS
 }
-

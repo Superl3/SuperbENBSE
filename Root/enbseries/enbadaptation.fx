@@ -15,14 +15,14 @@
 int   Title0        < string UIName="\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4"; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 int   Title1        < string UIName=" "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 float Bias          < string UIName="Auto Exposure Bias (log2 scale)"; > = {0.0};
-float MaxBrightness < string UIName="Adapt Max Brightness (log2 scale)"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
-float MinBrightness < string UIName="Adapt Min Brightness (log2 scale)"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
+float MaxBrightness < string UIName="Adapt Max Brightness (log2 scale)"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float MinBrightness < string UIName="Adapt Min Brightness (log2 scale)"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
 float LowPercent    < string UIName="Adapt Low  Percent";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercent   < string UIName="Adapt High Percent";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
 
 float BiasNight          < string UIName="Auto Exposure Night"; > = {0.0};
-float MaxBrightnessNight < string UIName="Adapt Max Brightness Night"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
-float MinBrightnessNight < string UIName="Adapt Min Brightness Night"; float UIMin= -9.0; float UIMax=3.0; > = { 0.80 };
+float MaxBrightnessNight < string UIName="Adapt Max Brightness Night"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float MinBrightnessNight < string UIName="Adapt Min Brightness Night"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
 float LowPercentNight    < string UIName="Adapt Low  Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercentNight   < string UIName="Adapt High Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
 
@@ -131,7 +131,7 @@ float4	PS_Histogram() : SV_Target
         for(int j=0; j<16.0; j++)
         {
             float  color   = TextureCurrent.SampleLevel(Sampler0, coord.xy, 0.0).r;
-           float level = saturate(( color + 9.0 ) / 12) * 63;
+           float level = saturate(( color + 5.0 ) / 7) * 63; // [-5, 2] 
             bin[ level * 0.25 ] += float4(0.0, 1.0, 2.0, 3.0) == float4(trunc(level % 4).xxxx); //bitwise ?
             coord.y  += coord.w;
         }
@@ -166,7 +166,7 @@ float4	PS_Histogram() : SV_Target
     float minBrightness = DayNight(MinBrightness, MinBrightnessNight);
     float maxBrightness = DayNight(MaxBrightness, MaxBrightnessNight);
 
-    float adapt = (adaptAnchor.x + adaptAnchor.y) * 0.5 / 63.0  * 7.0 - 5.0;
+    float adapt = (adaptAnchor.x + adaptAnchor.y) * 0.5 / 63.0 * 7.0 - 5.0; 
           adapt =  pow(2.0, clamp( adapt, minBrightness,  maxBrightness) + bias);  // min max on log2 scale
 
    	return lerp(TexturePrevious.Sample(Sampler0, 0.5).x, adapt, AdaptationParameters.w);
