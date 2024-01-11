@@ -277,9 +277,6 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float	grayadaptation = TextureAdaptation.Sample(Sampler0, IN.txcoord0.xy).x;
 	grayadaptation = max(grayadaptation, 0.0);
 	grayadaptation = min(grayadaptation, 50.0);
-	//float AdaptationMax = DayNightInt(ExtDayAdaptationMax, ExtNightAdaptationMax, IntAdaptationMax);
-	//float AdaptationMin = DayNightInt(ExtDayAdaptationMin, ExtNightAdaptationMin, IntAdaptationMin);
-	//color.xyz = color.xyz / (grayadaptation*AdaptationMax + AdaptationMin);
 
 	color.xyz = color.xyz / grayadaptation;
 
@@ -400,8 +397,8 @@ float4	PS_DrawOriginal(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	r1 = Params01[5] - r0;
 	res = Params01[5].w * r1 + r0;
 
-	//	res.xyz = color.xyz;
-	//	res.w=1.0;
+		res.xyz = color.xyz;
+		res.w=1.0;
 		return res;
 }
 

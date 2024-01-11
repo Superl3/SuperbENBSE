@@ -26,6 +26,19 @@ float MinBrightnessNight < string UIName="Adapt Min Brightness Night"; float UIM
 float LowPercentNight    < string UIName="Adapt Low  Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercentNight   < string UIName="Adapt High Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
 
+float BiasInteriorDay          < string UIName="Auto Exposure InteriorDay"; > = {0.0};
+float MaxBrightnessInteriorDay < string UIName="Adapt Max Brightness InteriorDay"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float MinBrightnessInteriorDay < string UIName="Adapt Min Brightness InteriorDay"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float LowPercentInteriorDay    < string UIName="Adapt Low  Percent InteriorDay";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
+float HighPercentInteriorDay   < string UIName="Adapt High Percent InteriorDay";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
+
+float BiasInteriorNight          < string UIName="Auto Exposure InteriorNight"; > = {0.0};
+float MaxBrightnessInteriorNight < string UIName="Adapt Max Brightness InteriorNight"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float MinBrightnessInteriorNight < string UIName="Adapt Min Brightness InteriorNight"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float LowPercentInteriorNight    < string UIName="Adapt Low  Percent InteriorNight";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
+float HighPercentInteriorNight   < string UIName="Adapt High Percent InteriorNight";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
+
+
 //+++++++++++++++++++++++++++++
 //external enb parameters, do not modify (shared)
 //+++++++++++++++++++++++++++++
@@ -104,15 +117,14 @@ float4	PS_Downsample( float4 pos : SV_POSITION, float2 txcoord0 : TEXCOORD0) : S
 	return log2(res) - 6.0; //log2( res / 64.0)
 }
 
+#include "enbdniseperation.fx"
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //output size is 1*1
 //TexturePrevious size is 1*1
 //TextureCurrent size is 16*16
 //output and input textures are R32 float format (red channel only)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-float DayNight(float day, float night) {
-    return lerp(night, day, ENightDayFactor);
-}
 
 float4	PS_Histogram() : SV_Target
 {
@@ -140,8 +152,8 @@ float4	PS_Histogram() : SV_Target
 
     float2 adaptAnchor = 0.5; //.x = high, .y = low
 
-    float highPercent = DayNight(HighPercent, HighPercentNight);
-    float lowPercent = DayNight(LowPercent, LowPercentNight);
+    float highPercent = DayNightExtInt(HighPercent, HighPercentNight, HighPercentInteriorDay, HighPercentInteriorNight);
+    float lowPercent = DayNightExtInt(LowPercent, LowPercentNight, LowPercentInteriorDay, LowPercentInteriorNight);
 
     float2 accumulate  = float2( highPercent - 1.0, lowPercent - 1.0) * 256.0;
 
@@ -162,9 +174,9 @@ float4	PS_Histogram() : SV_Target
     }
 
 
-    float bias = DayNight(Bias, BiasNight);
-    float minBrightness = DayNight(MinBrightness, MinBrightnessNight);
-    float maxBrightness = DayNight(MaxBrightness, MaxBrightnessNight);
+    float bias = DayNightExtInt(Bias, BiasNight, BiasInteriorDay, BiasInteriorNight);
+    float minBrightness = DayNightExtInt(MinBrightness, MinBrightnessNight, MinBrightnessInteriorDay, MinBrightnessInteriorNight);
+    float maxBrightness = DayNightExtInt(MaxBrightness, MaxBrightnessNight, MaxBrightnessInteriorDay, MaxBrightnessInteriorNight);
 
     float adapt = (adaptAnchor.x + adaptAnchor.y) * 0.5 / 63.0 * 7.0 - 5.0; 
           adapt =  pow(2.0, clamp( adapt, minBrightness,  maxBrightness) + bias);  // min max on log2 scale
