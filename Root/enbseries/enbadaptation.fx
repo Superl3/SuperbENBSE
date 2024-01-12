@@ -11,8 +11,6 @@
 //  update: Nov.23.2016                                             //
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
-
-int   Title0        < string UIName="\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4\xA4"; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 int   Title1        < string UIName=" "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 float Bias          < string UIName="Auto Exposure Bias (log2 scale)"; > = {0.0};
 float MaxBrightness < string UIName="Adapt Max Brightness (log2 scale)"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
@@ -20,17 +18,31 @@ float MinBrightness < string UIName="Adapt Min Brightness (log2 scale)"; float U
 float LowPercent    < string UIName="Adapt Low  Percent";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercent   < string UIName="Adapt High Percent";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
 
+int   Title2        < string UIName="  "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
+
+float BiasSunrise          < string UIName="Auto Exposure Sunrise"; > = {0.0};
+float MaxBrightnessSunrise < string UIName="Adapt Max Brightness Sunrise"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float MinBrightnessSunrise < string UIName="Adapt Min Brightness Sunrise"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
+float LowPercentSunrise    < string UIName="Adapt Low  Percent Sunrise";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
+float HighPercentSunrise   < string UIName="Adapt High Percent Sunrise";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
+
+int   Title3        < string UIName="   "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
+
 float BiasNight          < string UIName="Auto Exposure Night"; > = {0.0};
 float MaxBrightnessNight < string UIName="Adapt Max Brightness Night"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
 float MinBrightnessNight < string UIName="Adapt Min Brightness Night"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
 float LowPercentNight    < string UIName="Adapt Low  Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercentNight   < string UIName="Adapt High Percent Night";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
 
+int   Title4        < string UIName="    "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
+
 float BiasInteriorDay          < string UIName="Auto Exposure InteriorDay"; > = {0.0};
 float MaxBrightnessInteriorDay < string UIName="Adapt Max Brightness InteriorDay"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
 float MinBrightnessInteriorDay < string UIName="Adapt Min Brightness InteriorDay"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
 float LowPercentInteriorDay    < string UIName="Adapt Low  Percent InteriorDay";                float UIMin=  0.01; float UIMax=0.99; > = { 0.80 };
 float HighPercentInteriorDay   < string UIName="Adapt High Percent InteriorDay";                float UIMin=  0.01; float UIMax=0.99; > = { 0.95 };
+
+int   Title5        < string UIName="      "; float UIMin=0.0; float UIMax=0.0; > = { 0 };
 
 float BiasInteriorNight          < string UIName="Auto Exposure InteriorNight"; > = {0.0};
 float MaxBrightnessInteriorNight < string UIName="Adapt Max Brightness InteriorNight"; float UIMin= -5.0; float UIMax=2.0; > = { 0.80 };
@@ -152,8 +164,8 @@ float4	PS_Histogram() : SV_Target
 
     float2 adaptAnchor = 0.5; //.x = high, .y = low
 
-    float highPercent = DayNightExtInt(HighPercent, HighPercentNight, HighPercentInteriorDay, HighPercentInteriorNight);
-    float lowPercent = DayNightExtInt(LowPercent, LowPercentNight, LowPercentInteriorDay, LowPercentInteriorNight);
+    float highPercent = TODSeperation(HighPercent, HighPercentNight, HighPercentSunrise, HighPercentSunrise, HighPercentInteriorDay, HighPercentInteriorNight, TimeOfDay1, TimeOfDay2);
+    float lowPercent = TODSeperation(LowPercent, LowPercentNight, LowPercentSunrise, LowPercentSunrise, LowPercentInteriorDay, LowPercentInteriorNight, TimeOfDay1, TimeOfDay2);
 
     float2 accumulate  = float2( highPercent - 1.0, lowPercent - 1.0) * 256.0;
 
@@ -174,9 +186,9 @@ float4	PS_Histogram() : SV_Target
     }
 
 
-    float bias = DayNightExtInt(Bias, BiasNight, BiasInteriorDay, BiasInteriorNight);
-    float minBrightness = DayNightExtInt(MinBrightness, MinBrightnessNight, MinBrightnessInteriorDay, MinBrightnessInteriorNight);
-    float maxBrightness = DayNightExtInt(MaxBrightness, MaxBrightnessNight, MaxBrightnessInteriorDay, MaxBrightnessInteriorNight);
+    float bias = TODSeperation(Bias, BiasNight, BiasSunrise, BiasSunrise, BiasInteriorDay, BiasInteriorNight, TimeOfDay1, TimeOfDay2);
+    float minBrightness = TODSeperation(MinBrightness, MinBrightnessNight, MinBrightnessSunrise, MinBrightnessSunrise, MinBrightnessInteriorDay, MinBrightnessInteriorNight, TimeOfDay1, TimeOfDay2);
+    float maxBrightness = TODSeperation(MaxBrightness, MaxBrightnessNight, MaxBrightnessSunrise, MaxBrightnessSunrise, MaxBrightnessInteriorDay, MaxBrightnessInteriorNight, TimeOfDay1, TimeOfDay2);
 
     float adapt = (adaptAnchor.x + adaptAnchor.y) * 0.5 / 63.0 * 7.0 - 5.0; 
           adapt =  pow(2.0, clamp( adapt, minBrightness,  maxBrightness) + bias);  // min max on log2 scale
