@@ -12,7 +12,7 @@ float	ExtDaySaturation
 	string UIName = "ED: Saturation";
 	string UIWidget = "Spinner";
 	float UIMin = 0.0;
-	float UIMax = 2.0;
+	float UIMax = 3.0;
 > = { 1.0 };
 // float	ExtDayAdaptationMax
 // <
@@ -78,7 +78,7 @@ float	ExtNightSaturation
 	string UIName = "EN: Saturation";
 	string UIWidget = "Spinner";
 	float UIMin = 0.0;
-	float UIMax = 2.0;
+	float UIMax = 3.0;
 > = { 1.0 };
 // float	ExtNightAdaptationMax
 // <
@@ -144,7 +144,7 @@ float	IntSaturation
 	string UIName = "IN: Saturation";
 	string UIWidget = "Spinner";
 	float UIMin = 0.0;
-	float UIMax = 2.0;
+	float UIMax = 3.0;
 > = { 1.15 };
 // float	IntAdaptationMax
 // <
@@ -213,6 +213,7 @@ float	Desaturation
 	float UIMin = 0.0;
 	float UIMax = 1.0;
 > = { 0.7 };
+
 float	HueShift
 <
 	string UIName = "HueShift";
@@ -220,13 +221,16 @@ float	HueShift
 	float UIMin = 0.0;
 	float UIMax = 1.0;
 > = { 0.4 };
+
+
 float	Resaturation
 <
 	string UIName = "Resaturation";
 	string UIWidget = "Spinner";
 	float UIMin = 0.0;
-	float UIMax = 1.0;
+	float UIMax = 2.0;
 > = { 0.3 };
+
 
 /*
 * 

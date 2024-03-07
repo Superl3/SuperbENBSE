@@ -283,6 +283,7 @@ float4	PS_Draw(VS_OUTPUT_POST IN, float4 v0 : SV_Position0) : SV_Target
 	float depth = TextureDepth.Sample(Sampler1, IN.txcoord0.xy, 0).x;
 	depth = min(depth * rcp(mad(depth, -2999.0, 3000.0)), 1);
 	color.xyz = frostbyteTonemap(color.xyz, depth);
+	//color.xyz = Tonemap_Uchimura(color.xyz, depth);
 
 	#ifdef E_CC_PALETTE
 		//activated by UsePaletteTexture=true
